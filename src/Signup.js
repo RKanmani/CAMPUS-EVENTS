@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { auth, db } from "./firebase"; // connect firebase
+import { auth, db } from "./firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+import "./Auth.css";
 
-function Signup() {
-  // store form inputs
+function Signup({ onSwitchToLogin }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -14,46 +14,139 @@ function Signup() {
     interests: ""
   });
 
-  // update form state on typing
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // signup function
-  const signup = async () => {
+  const handleSignup = async () => {
+    setError("");
+
+    if (
+      !form.name ||
+      !form.email ||
+      !form.password ||
+      !form.department ||
+      !form.year
+    ) {
+      setError("Please fill all required fields.");
+      return;
+    }
+
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      // create user in Firebase Auth
-      const user = await createUserWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         form.email,
         form.password
       );
 
-      // save profile in Firestore
-      await setDoc(doc(db, "users", user.user.uid), {
+      await setDoc(doc(db, "users", userCredential.user.uid), {
         name: form.name,
         email: form.email,
         department: form.department,
         year: form.year,
-        interests: form.interests.split(",")
+        interests: form.interests
+          ? form.interests.split(",").map((i) => i.trim())
+          : [],
+        createdAt: new Date()
       });
 
-      alert("Signup Successful!");
-    } catch (error) {
-      alert("Error: " + error.message);
+    } catch (err) {
+      setError(err.message);
     }
+
+    setLoading(false);
   };
 
   return (
-    <div>
-      <h2>Signup</h2>
-      <input name="name" placeholder="Name" onChange={handleChange} /><br/>
-      <input name="email" placeholder="Email" onChange={handleChange} /><br/>
-      <input name="password" type="password" placeholder="Password" onChange={handleChange} /><br/>
-      <input name="department" placeholder="Department" onChange={handleChange} /><br/>
-      <input name="year" placeholder="Year" onChange={handleChange} /><br/>
-      <input name="interests" placeholder="Interests (comma separated)" onChange={handleChange} /><br/>
-      <button onClick={signup}>Sign Up</button>
+    <div className="auth-page">
+      <div className="auth-overlay">
+        <div className="auth-card">
+
+          <h2 className="auth-title">Create Account 🎓</h2>
+          <p className="auth-subtitle">
+            Join and explore campus events
+          </p>
+
+          {error && (
+            <p style={{ color: "red", textAlign: "center", fontSize: "0.9rem" }}>
+              {error}
+            </p>
+          )}
+
+          <input
+            className="auth-input"
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={handleChange}
+          />
+
+          <input
+            className="auth-input"
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+          />
+
+          <input
+            className="auth-input"
+            name="password"
+            type="password"
+            placeholder="Password (min 6 characters)"
+            value={form.password}
+            onChange={handleChange}
+          />
+
+          <input
+            className="auth-input"
+            name="department"
+            placeholder="Department"
+            value={form.department}
+            onChange={handleChange}
+          />
+
+          <input
+            className="auth-input"
+            name="year"
+            placeholder="Year"
+            value={form.year}
+            onChange={handleChange}
+          />
+
+          <input
+            className="auth-input"
+            name="interests"
+            placeholder="Interests (comma separated)"
+            value={form.interests}
+            onChange={handleChange}
+          />
+
+          <button
+            className="auth-button"
+            onClick={handleSignup}
+            disabled={loading}
+          >
+            {loading ? "Creating account..." : "Create Account"}
+          </button>
+
+          <div className="auth-footer">
+            Already have an account? <span onClick={onSwitchToLogin}>Login</span>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 }

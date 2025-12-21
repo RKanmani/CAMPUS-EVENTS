@@ -1,26 +1,82 @@
 import { useState } from "react";
 import { auth } from "./firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import "./Auth.css";
 
-function Log() {
+function Log({ onSwitchToSignup }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const log = async () => {
+  const handleLogin = async () => {
+    setError("");
+
+    if (!email || !password) {
+      setError("Please enter email and password");
+      return;
+    }
+
+    setLoading(true);
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Login Successful!");
-    } catch (error) {
-      alert(error.message);
+    } catch (err) {
+      setError(err.message);
     }
+
+    setLoading(false);
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} /><br/>
-      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} /><br/>
-      <button onClick={log}>Login</button>
+    <div className="auth-page">
+      <div className="auth-overlay">
+        <div className="auth-card">
+
+          <h2 className="auth-title">Welcome Back 👋</h2>
+          <p className="auth-subtitle">
+            Login to continue to Campus Events
+          </p>
+
+          {error && (
+            <p style={{ color: "red", textAlign: "center", fontSize: "0.9rem" }}>
+              {error}
+            </p>
+          )}
+
+          <input
+            type="email"
+            placeholder="Email"
+            className="auth-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="auth-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button
+            className="auth-button"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Please wait..." : "Login"}
+          </button>
+
+          <div className="auth-footer">
+            Don't have an account?{" "}
+            <span onClick={onSwitchToSignup}>
+              Sign up
+            </span>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 }
