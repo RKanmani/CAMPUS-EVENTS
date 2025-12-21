@@ -1,0 +1,74 @@
+.event-detail-page {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.ssn-header {
+  background: #004a99; /* SSN Blue */
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.poster-container img {
+  width: 100%;
+  max-height: 350px;
+  object-fit: cover;
+}
+
+.content-section {
+  padding: 25px;
+}
+
+h1 { font-size: 2rem; margin-bottom: 5px; color: #333; }
+
+.organized-by { color: #666; margin-bottom: 20px; }
+.organized-by span { color: #004a99; font-weight: bold; }
+
+.info-grid {
+  display: flex;
+  justify-content: space-between;
+  background: #f1f5f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.description-box {
+  border-left: 4px solid #004a99;
+  padding-left: 15px;
+  margin-bottom: 30px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.rsvp-button {
+  width: 100%;
+  padding: 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  background: #28a745; /* Success Green */
+  color: white;
+  transition: 0.3s;
+}
+
+.rsvp-button:hover:not(:disabled) {
+  background: #218838;
+  transform: scale(1.01);
+}
+
+/* THE GREY STATE */
+.rsvp-button.registered {
+  background: #9ca3af !important; /* Neutral Grey */
+  cursor: not-allowed;
+}
+
+.loading { text-align: center; margin-top: 50px; }

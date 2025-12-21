@@ -1,0 +1,104 @@
+.my-events-page {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.dashboard-header {
+  background: #004a99; /* SSN Blue */
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.events-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.event-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 6px solid #28a745; /* Green for confirmed status */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.event-item-card:hover {
+  transform: scale(1.01);
+}
+
+.event-details h3 {
+  margin: 0 0 5px 0;
+  color: #1a1a1a;
+  font-size: 1.3rem;
+}
+
+.reg-date {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.badge {
+  background: #e6f4ea;
+  color: #1e7e34;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.event-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.view-btn {
+  text-decoration: none;
+  background: #f0f4f8;
+  color: #004a99;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.cancel-btn {
+  background: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancel-btn:hover {
+  background: #e53e3e;
+  color: white;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 50px;
+  color: #666;
+}
+
+.explore-btn {
+  display: inline-block;
+  margin-top: 15px;
+  background: #004a99;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+}
