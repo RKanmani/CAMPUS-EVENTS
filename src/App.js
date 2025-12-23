@@ -6,7 +6,6 @@ import Signup from "./Signup";
 import Login from "./Log";
 import EventDetails from './EventDetails';
 import MyEvents from './MyEvents';
-// --- ADDED THIS LINE BELOW TO ENABLE NAVIGATION ---
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -17,76 +16,75 @@ function App() {
     await signOut(auth);
   };
 
-  if (user) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#f5f7fb"
-        }}
-      >
-        <h2 style={{ marginBottom: "1rem" }}>
-          Welcome {user.name} 👋
-        </h2>
-
-        <button
-          onClick={logout}
-          style={{
-            padding: "10px 20px",
-            borderRadius: "8px",
-            border: "none",
-            background: "#ef4444",
-            color: "white",
-            fontWeight: "600",
-            cursor: "pointer"
-          }}
-        >
-          Logout
-        </button>
-      </div>
-    );
-  }
-
   return (
     <Router>
-      <div className="App">
+      <div className="App" style={{ margin: 0, padding: 0 }}>
         <Routes>
-          {/* 1. MEMBER A'S WORK (The Home Page) */}
           <Route path="/" element={
-            <div>
-              {user ? (
-                <>
-                  <h2>Welcome {user.name}</h2>
-                  <button onClick={logout}>Logout</button>
-                </>
-              ) : (
-                <>
-                  <Signup />
-                  <Login />
-                </>
-              )}
+            <div style={{ 
+              height: "100vh", 
+              width: "100vw", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              // --- THIS PART SETS YOUR IMAGE ---
+              backgroundImage: "url('/campus.jpg')", // Ensure image is in public folder
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              position: "fixed",
+              top: 0,
+              left: 0
+            }}>
+              {/* This is the white card in your screenshot */}
+              <div style={{ 
+                backgroundColor: "white", 
+                padding: "40px",
+                borderRadius: "12px",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+                textAlign: "center",
+                width: "90%",
+                maxWidth: "500px",
+                zIndex: 1
+              }}>
+                {user ? (
+                  <>
+                    <h2 style={{ color: "#333", marginBottom: "20px" }}>
+                      Welcome {user.displayName || user.email} 👋
+                    </h2>
+                    <button
+                      onClick={logout}
+                      style={{
+                        padding: "12px 25px",
+                        borderRadius: "8px",
+                        border: "none",
+                        background: "#5d5fef", // Matching the purple/blue button in your image
+                        color: "white",
+                        fontWeight: "600",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {showSignup ? (
+                      <Signup onSwitchToLogin={() => setShowSignup(false)} />
+                    ) : (
+                      <Login onSwitchToSignup={() => setShowSignup(true)} />
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           } />
 
-          {/* 2. YOUR WORK (The Event Details Page) */}
           <Route path="/event/:eventId" element={<EventDetails />} />
-          
-          {/* --- PART 3: THE MY EVENTS (ADD THE ROUTE HERE) --- */}
           <Route path="/my-events" element={<MyEvents />} />
         </Routes>
       </div>
     </Router>
-    <>
-      {showSignup ? (
-        <Signup onSwitchToLogin={() => setShowSignup(false)} />
-      ) : (
-        <Login onSwitchToSignup={() => setShowSignup(true)} />
-      )}
-    </>
   );
 }
 
