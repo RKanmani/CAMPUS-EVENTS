@@ -1,0 +1,25 @@
+/* src/AddEvent.css */
+.form-container {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.form-input:focus {
+  border-color: #5d5fef;
+  box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
+  outline: none;
+}
