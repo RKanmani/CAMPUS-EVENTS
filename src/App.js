@@ -49,11 +49,7 @@ function App() {
                   overflowY: "auto",
                   zIndex: 1
                 }}>
-                  {/* Top Bar inside the Dashboard area */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                     <h3>Campus Events</h3>
-                     <button onClick={logout} style={{ background: '#ef4444', color: 'white', border: 'none', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>Logout</button>
-                  </div>
+        
                   
                   <Dashboard /> 
                 </div>

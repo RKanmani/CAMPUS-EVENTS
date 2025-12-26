@@ -1,56 +1,224 @@
 import React, { useState } from 'react';
 import { db } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import './addevent.css';
 
 const AddEvent = () => {
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
-    title: '', description: '', category: 'Technical', subCategory: '',
-    date: '', startTime: '', endTime: '', venue: '', posterUrl: '', createdBy: ''
+    title: '',
+    description: '',
+    category: 'Technical',
+    subCategory: '',
+    date: '',
+    startTime: '',
+    endTime: '',
+    venue: '',
+    posterUrl: '',
+    createdBy: ''
   });
+  
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       // PHASE 1: Writing the real schema to Firestore
       await addDoc(collection(db, "events"), {
         ...formData,
         createdAt: serverTimestamp()
       });
-      alert("Event Added Successfully! Bruh, you're a pro.");
+      
+      alert("Event Added Successfully!");
+      navigate('/');
     } catch (err) {
       console.error("Error adding event: ", err);
+      alert("Failed to add event. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: "40px", maxWidth: "600px", margin: "0 auto", background: "white", borderRadius: "12px" }}>
-      <h2>Add New Campus Event</h2>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-        <input placeholder="Event Title" onChange={e => setFormData({...formData, title: e.target.value})} required />
-        <textarea placeholder="Description" onChange={e => setFormData({...formData, description: e.target.value})} />
-        
-        <div style={{ display: "flex", gap: "10px" }}>
-          <select onChange={e => setFormData({...formData, category: e.target.value})}>
-            <option value="Technical">Technical</option>
-            <option value="Cultural">Cultural</option>
-            <option value="Sports">Sports</option>
-          </select>
-          <input type="date" onChange={e => setFormData({...formData, date: e.target.value})} required />
+    <div className="add-event-container">
+      <div className="add-event-card">
+        <div className="add-event-header">
+          <h2>Add New Campus Event</h2>
+          <button 
+            className="back-button" 
+            onClick={() => navigate('/')}
+          >
+            ← Back to Dashboard
+          </button>
         </div>
 
-        <div style={{ display: "flex", gap: "10px" }}>
-          <input type="time" placeholder="Start" onChange={e => setFormData({...formData, startTime: e.target.value})} required />
-          <input type="time" placeholder="End" onChange={e => setFormData({...formData, endTime: e.target.value})} required />
-        </div>
+        <form onSubmit={handleSubmit} className="event-form">
+          <div className="form-group">
+            <label htmlFor="title">Event Title *</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              className="form-input"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Enter event title"
+              required
+            />
+          </div>
 
-        <input placeholder="Venue" onChange={e => setFormData({...formData, venue: e.target.value})} required />
-        <input placeholder="Poster Image URL" onChange={e => setFormData({...formData, posterUrl: e.target.value})} required />
-        <input placeholder="Club Name (Created By)" onChange={e => setFormData({...formData, createdBy: e.target.value})} required />
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              className="form-input"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Describe your event"
+              rows="4"
+            />
+          </div>
 
-        <button type="submit" style={{ padding: "12px", background: "#4f46e5", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}>
-          Publish Event
-        </button>
-      </form>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="category">Category *</label>
+              <select
+                id="category"
+                name="category"
+                className="form-input"
+                value={formData.category}
+                onChange={handleChange}
+                required
+              >
+                <option value="Technical">Technical</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Sports">Sports</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="subCategory">Sub Category</label>
+              <input
+                type="text"
+                id="subCategory"
+                name="subCategory"
+                className="form-input"
+                value={formData.subCategory}
+                onChange={handleChange}
+                placeholder="e.g., Hackathon, Dance"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="date">Date *</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              className="form-input"
+              value={formData.date}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="startTime">Start Time *</label>
+              <input
+                type="time"
+                id="startTime"
+                name="startTime"
+                className="form-input"
+                value={formData.startTime}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="endTime">End Time *</label>
+              <input
+                type="time"
+                id="endTime"
+                name="endTime"
+                className="form-input"
+                value={formData.endTime}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="venue">Venue *</label>
+            <input
+              type="text"
+              id="venue"
+              name="venue"
+              className="form-input"
+              value={formData.venue}
+              onChange={handleChange}
+              placeholder="Event location"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="posterUrl">Poster Image URL *</label>
+            <input
+              type="url"
+              id="posterUrl"
+              name="posterUrl"
+              className="form-input"
+              value={formData.posterUrl}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+              required
+            />
+            {formData.posterUrl && (
+              <div className="image-preview">
+                <img src={formData.posterUrl} alt="Preview" />
+              </div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="createdBy">Club Name (Created By) *</label>
+            <input
+              type="text"
+              id="createdBy"
+              name="createdBy"
+              className="form-input"
+              value={formData.createdBy}
+              onChange={handleChange}
+              placeholder="e.g., Tech Club, Cultural Committee"
+              required
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={loading}
+          >
+            {loading ? 'Publishing Event...' : 'Publish Event'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

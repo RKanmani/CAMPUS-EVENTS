@@ -1,86 +1,251 @@
-/* src/Dashboard.css */
+/* =========================
+   DASHBOARD BACKGROUND
+========================= */
 .dashboard-container {
-  padding: 30px;
-  background-color: #f8f9fa;
+  padding: 40px;
   min-height: 100vh;
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    #f5f7ff 0%,
+    #eef1ff 50%,
+    #f9fafc 100%
+  );
+}
+
+/* =========================
+   GLASS PANEL (TOP SECTION)
+========================= */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 30px;
+  border-radius: 24px;
+  box-shadow:
+    0 10px 30px rgba(93, 95, 239, 0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.6);
+  margin-bottom: 40px;
+}
+
+/* Headings inside dashboard */
+.glass-panel h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.5px;
+}
+
+/* =========================
+   EVENT GRID
+========================= */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+/* =========================
+   EVENT CARD
+========================= */
+.event-card {
+  background: linear-gradient(180deg, #ffffff, #fafbff);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(93, 95, 239, 0.08);
+  cursor: pointer;
+  transition: all 0.35s ease;
   position: relative;
 }
 
-.glass-panel {
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  margin-bottom: 30px;
+/* Soft glow on hover */
+.event-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(93,95,239,0.15),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: 0.35s;
+  pointer-events: none;
 }
 
-.event-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-}
-
-.event-card {
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid #eee;
+.event-card:hover::after {
+  opacity: 1;
 }
 
 .event-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(93, 95, 239, 0.2);
+  transform: translateY(-12px) scale(1.01);
+  box-shadow:
+    0 25px 50px rgba(93, 95, 239, 0.25);
 }
 
+/* =========================
+   CARD IMAGE
+========================= */
 .card-img {
   width: 100%;
-  height: 180px;
+  height: 190px;
   object-fit: cover;
+  transition: transform 0.4s ease;
 }
 
-.card-body { padding: 20px; }
+.event-card:hover .card-img {
+  transform: scale(1.08);
+}
 
-/* Floating Plus Button */
+/* =========================
+   CARD BODY
+========================= */
+.card-body {
+  padding: 22px;
+}
+
+.card-body h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 8px 0;
+  color: #111827;
+}
+
+.card-body p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* =========================
+   SEARCH & FILTER BAR
+========================= */
+.search-filter-bar {
+  display: flex;
+  gap: 22px;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+.search-box,
+.filter-box {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #f3f5ff, #eef1ff);
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow:
+    0 6px 16px rgba(93,95,239,0.15),
+    inset 0 0 0 1px rgba(93,95,239,0.15);
+  transition: 0.3s ease;
+}
+
+.search-box:hover,
+.filter-box:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 24px rgba(93,95,239,0.25),
+    inset 0 0 0 1px rgba(93,95,239,0.4);
+}
+
+.search-box input,
+.filter-box select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  margin-left: 10px;
+  min-width: 220px;
+  cursor: pointer;
+  color: #1f2937;
+}
+
+.search-box input::placeholder {
+  color: #6b7280;
+}
+
+/* Icons */
+.icon {
+  font-size: 16px;
+  opacity: 0.75;
+}
+
+/* =========================
+   FLOATING ACTION BUTTON
+========================= */
 .fab {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  width: 60px;
-  height: 60px;
-  background: #5d5fef;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #5d5fef, #7c7fff);
   color: white;
   border-radius: 50%;
+  font-size: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(93, 95, 239, 0.4);
   border: none;
-  transition: 0.3s;
+  box-shadow:
+    0 18px 35px rgba(93,95,239,0.45);
+  transition: 0.35s ease;
   z-index: 100;
 }
 
-.fab:hover { transform: scale(1.1) rotate(90deg); background: #4a4cdb; }
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+.fab:hover {
+  transform: scale(1.15) rotate(90deg);
+  box-shadow:
+    0 25px 50px rgba(93,95,239,0.6);
 }
 
-.modal-content {
-  background: white;
-  padding: 30px;
+/* =========================
+   FORCE BIG SEARCH & FILTER
+   (FINAL OVERRIDE — KEEP THIS)
+========================= */
+
+.search-filter-bar {
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr;
+  gap: 28px;
+  width: 100%;
+  margin-top: 32px;
+}
+
+/* Big, tall containers */
+.search-box,
+.filter-box {
+  height: 68px;
+  padding: 0 24px;
   border-radius: 20px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
 }
+
+/* Inputs fill the container */
+.search-box input,
+.filter-box select {
+  width: 100%;
+  height: 100%;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+/* Make icons feel proportional */
+.search-box .icon,
+.filter-box .icon {
+  font-size: 20px;
+}
+
+/* Strong focus state (this is what makes it NOT look plain HTML) */
+.search-box:focus-within,
+.filter-box:focus-within {
+  box-shadow:
+    0 16px 36px rgba(93, 95, 239, 0.4),
+    inset 0 0 0 2px rgba(93, 95, 239, 0.55);
+  transform: translateY(-2px);
+}
+
+
+
