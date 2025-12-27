@@ -14,7 +14,6 @@ const Dashboard = () => {
   useEffect(() => {
     const q = query(collection(db, "events"), orderBy("date", "asc"));
     const unsub = onSnapshot(q, (snap) => {
-      console.log("Events from Firebase:", snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setEvents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
     return () => unsub();
@@ -51,11 +50,11 @@ const Dashboard = () => {
             </select>
           </div>
         </div>
-
       </div>
 
       <div className="event-grid">
         {filteredEvents.map(event => (
+          // FIXED: Added backticks to the navigate path
           <div key={event.id} className="event-card" onClick={() => navigate(`/event/${event.id}`)}>
             <img src={event.posterUrl} className="card-img" alt="" />
             <div className="card-body">
@@ -67,7 +66,6 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* FLOATING PLUS BUTTON - NOW NAVIGATES TO ADD EVENT PAGE */}
       <button className="fab" onClick={() => navigate('/add-event')}>+</button>
     </div>
   );
