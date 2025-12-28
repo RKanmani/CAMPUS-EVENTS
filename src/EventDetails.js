@@ -5,22 +5,41 @@ import { AuthContext } from './AuthContext';
 import { db } from './firebase'; 
 import './EventDetails.css';
 
+// Generate Google Calendar link with pre-filled event details
 const generateGoogleCalendarLink = (event) => {
-  const startDateTime = new Date(`${event.date}T${event.startTime}`);
-  const endDateTime = new Date(`${event.date}T${event.endTime}`);
+  // Parse date and time
+  const [year, month, day] = event.date.split("-");
+  const [startHour, startMinute] = event.startTime.split(":");
+  const [endHour, endMinute] = event.endTime.split(":");
 
-  const formatDate = (date) =>
-    date.toISOString().replace(/-|:|\.\d+/g, "");
+  // Create Date objects in local time
+  const startDateTime = new Date(year, month - 1, day, startHour, startMinute);
+  const endDateTime = new Date(year, month - 1, day, endHour, endMinute);
+
+  // Format date to YYYYMMDDTHHMMSSZ (UTC)
+  const formatDate = (date) => {
+    const pad = (n) => String(n).padStart(2, "0");
+    return (
+      date.getUTCFullYear() +
+      pad(date.getUTCMonth() + 1) +
+      pad(date.getUTCDate()) +
+      "T" +
+      pad(date.getUTCHours()) +
+      pad(date.getUTCMinutes()) +
+      pad(date.getUTCSeconds()) +
+      "Z"
+    );
+  };
 
   const start = formatDate(startDateTime);
   const end = formatDate(endDateTime);
 
-  return `https://www.google.com/calendar/render?action=TEMPLATE
-    &text=${encodeURIComponent(event.title)}
-    &dates=${start}/${end}
-    &details=${encodeURIComponent(event.description || "Campus Event")}
-    &location=${encodeURIComponent(event.venue)}
-  `;
+  return `https://www.google.com/calendar/render?action=TEMPLATE` +
+    `&text=${encodeURIComponent(event.title)}` +
+    `&dates=${start}/${end}` +
+    `&details=${encodeURIComponent(event.description || "Campus Event")}` +
+    `&location=${encodeURIComponent(event.venue || "")}` +
+    `&sf=true&output=xml`;
 };
 
 const EventDetails = () => {
