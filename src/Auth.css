@@ -1,0 +1,347 @@
+/* Auth Page Container */
+.auth-page {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('assets/bg.jpg'); /* Your campus image - matches App.js */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+/* Overlay - No overlay, fully transparent to show background */
+.auth-overlay {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+}
+
+/* Auth Card - Clean white card without transparency */
+.auth-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+  animation: slideUp 0.5s ease-out;
+  
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 95, 199, 0.5) transparent;
+}
+
+/* Custom scrollbar for webkit browsers */
+.auth-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.auth-card::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.auth-card::-webkit-scrollbar-thumb {
+  background: rgba(91, 95, 199, 0.5);
+  border-radius: 10px;
+}
+
+.auth-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(91, 95, 199, 0.7);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Title */
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+/* Subtitle */
+.auth-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin: 0 0 30px 0;
+  text-align: center;
+}
+
+/* Error Message */
+.auth-error {
+  background: rgba(255, 238, 238, 0.95);
+  color: #c33;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  border-left: 4px solid #c33;
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Input Fields */
+.auth-input {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #fff;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #5b5fc7;
+  box-shadow: 0 0 0 4px rgba(91, 95, 199, 0.1);
+  transform: translateY(-2px);
+}
+
+.auth-input::placeholder {
+  color: #999;
+}
+
+.auth-input:hover:not(:focus) {
+  border-color: #c0c0c0;
+}
+
+.auth-input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Button */
+.auth-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #5b5fc7 0%, #4b4fb7 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(91, 95, 199, 0.3);
+}
+
+.auth-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(91, 95, 199, 0.4);
+  background: linear-gradient(135deg, #6b6fd7 0%, #5b5fc7 100%);
+}
+
+.auth-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #9999cc 0%, #8888bb 100%);
+}
+
+/* Footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.auth-footer span {
+  color: #5b5fc7;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.auth-footer span:hover {
+  color: #4b4fb7;
+}
+
+.auth-footer span:active {
+  color: #3b3f97;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-page {
+    padding: 15px;
+  }
+
+  .auth-overlay {
+    padding: 20px 15px;
+  }
+
+  .auth-card {
+    padding: 30px 24px;
+    max-width: 100%;
+    max-height: 85vh;
+  }
+
+  .auth-title {
+    font-size: 1.75rem;
+  }
+
+  .auth-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+  }
+
+  .auth-input {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+  }
+
+  .auth-button {
+    padding: 14px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 10px;
+  }
+
+  .auth-overlay {
+    padding: 15px 10px;
+    min-height: 100vh;
+  }
+
+  .auth-card {
+    padding: 24px 20px;
+    border-radius: 20px;
+    max-height: 80vh;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+
+  .auth-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .auth-input {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+  }
+
+  .auth-button {
+    padding: 13px;
+    font-size: 0.95rem;
+  }
+
+  .auth-footer {
+    font-size: 0.9rem;
+    margin-top: 20px;
+  }
+}
+
+/* Additional improvements for better UX */
+.auth-input[type="password"] {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+}
+
+.auth-input[type="password"]::placeholder {
+  font-family: inherit;
+  letter-spacing: normal;
+}
+
+/* Focus visible for accessibility */
+.auth-button:focus-visible,
+.auth-input:focus-visible,
+.auth-footer span:focus-visible {
+  outline: 3px solid #5b5fc7;
+  outline-offset: 2px;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure body doesn't have overflow issues */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* For very tall forms (admin/signup with many fields) */
+@media (max-height: 700px) {
+  .auth-card {
+    max-height: 85vh;
+    padding: 30px;
+  }
+  
+  .auth-title {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  
+  .auth-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  
+  .auth-input {
+    padding: 11px 16px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+  
+  .auth-button {
+    padding: 13px;
+    margin-top: 8px;
+  }
+}
