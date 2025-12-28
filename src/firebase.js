@@ -1,4 +1,3 @@
-// src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -13,13 +12,11 @@ const firebaseConfig = {
   appId: "1:708831860876:web:6c593101324c604cd683a9"
 };
 
-// 1. Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// 2. Initialize Services
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Initialize services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 
-// 3. Export them using "Named Exports"
-// This allows other files to do: import { auth, db } from './firebase';
-export { auth, db };
+export default app;
