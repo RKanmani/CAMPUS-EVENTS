@@ -1,9 +1,11 @@
+import { doc, getDoc, collection, addDoc, deleteDoc, query, where, getDocs } from "firebase/firestore";
 import React, { useState, useEffect, useContext } from 'react'; 
 import { useParams } from 'react-router-dom'; 
 import { AuthContext } from './AuthContext'; 
 import { db } from './firebase'; 
-import { doc, getDoc, collection, addDoc } from 'firebase/firestore'; 
 import './EventDetails.css';
+
+
 
 const EventDetails = () => {
   const { user } = useContext(AuthContext); 
@@ -40,34 +42,75 @@ const EventDetails = () => {
     fetchEvent();
   }, [eventId]);
 
+  const checkConflict = async () => {
+  const registrationsRef = collection(db, "registrations");
+  const q = query(
+    registrationsRef,
+    where("userEmail", "==", user.email),
+    where("date", "==", event.date),
+    where("startTime", "==", event.startTime)
+  );
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty; // returns true if there’s a conflict
+};
+
+
   const handleRSVP = async () => {
-    if (!user) {
-      alert("Login to your SSN account!");
-      return;
-    }
+  if (!user) {
+    alert("Login to your SSN account!");
+    return;
+  }
 
-    const confirmAction = window.confirm(`Confirm registration for ${event.title}?`);
+  // 1️⃣ Check for conflict
+  const conflict = await checkConflict();
 
-    if (confirmAction) {
-      setLoading(true);
-      try {
-        await addDoc(collection(db, "registrations"), {
-          userEmail: user.email,
-          eventId: eventId || "ssn_event",
-          eventTitle: event.title,
-          college: "SSN",
-          registeredAt: new Date()
-        });
+  if (conflict) {
+    const replace = window.confirm(
+      "You already have an event at this time. Do you want to replace it with this one?"
+    );
+    if (!replace) return;
 
-        setIsRegistered(true);
-        alert("Registration Successful!");
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
+    // 2️⃣ Delete the old conflicting RSVP
+    const registrationsRef = collection(db, "registrations");
+    const q = query(
+      registrationsRef,
+      where("userEmail", "==", user.email),
+      where("date", "==", event.date),
+      where("startTime", "==", event.startTime)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (docSnap) => {
+      await deleteDoc(doc(db, "registrations", docSnap.id));
+    });
+  }
+
+  // 3️⃣ Ask for final confirmation
+  const confirmAction = window.confirm(`Confirm registration for ${event.title}?`);
+  if (!confirmAction) return;
+
+  // 4️⃣ Add the new registration
+  setLoading(true);
+  try {
+    await addDoc(collection(db, "registrations"), {
+      userEmail: user.email,
+      eventId: eventId || "ssn_event",
+      eventTitle: event.title,
+      college: "SSN",
+      date: event.date,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      registeredAt: new Date()
+    });
+
+    setIsRegistered(true);
+    alert("Registration Successful!");
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (!event) return <div className="loading">Connecting to SSN...</div>;
 
