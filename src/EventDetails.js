@@ -28,11 +28,33 @@ const EventDetails = () => {
     fetchEvent();
   }, [eventId]);
 
+  // Check if user is already registered for this event
+  useEffect(() => {
+    const checkRegistration = async () => {
+      if (!user || !eventId) return;
+      
+      try {
+        const registrationsRef = collection(db, "registrations");
+        const q = query(
+          registrationsRef,
+          where("userId", "==", user.uid),
+          where("eventId", "==", eventId)
+        );
+        const querySnapshot = await getDocs(q);
+        setIsRegistered(!querySnapshot.empty);
+      } catch (error) {
+        console.error("Error checking registration:", error);
+      }
+    };
+    
+    checkRegistration();
+  }, [user, eventId]);
+
   const checkConflict = async () => {
     const registrationsRef = collection(db, "registrations");
     const q = query(
       registrationsRef,
-      where("userEmail", "==", user.email),
+      where("userId", "==", user.uid), // ⭐ Changed from userEmail to userId
       where("date", "==", event.date),
       where("startTime", "==", event.startTime)
     );
@@ -54,7 +76,7 @@ const EventDetails = () => {
 
       const q = query(
         collection(db, "registrations"),
-        where("userEmail", "==", user.email),
+        where("userId", "==", user.uid), // ⭐ Changed from userEmail to userId
         where("date", "==", event.date),
         where("startTime", "==", event.startTime)
       );
@@ -64,27 +86,60 @@ const EventDetails = () => {
       }
     }
 
-    // FIXED: Added backticks and template literal
     const confirmAction = window.confirm(`Confirm registration for ${event.title}?`);
     if (!confirmAction) return;
 
     setLoading(true);
     try {
+      // ⭐ CRITICAL FIX: Added userId field that matches request.auth.uid
       await addDoc(collection(db, "registrations"), {
+        userId: user.uid,              // ⭐ REQUIRED for Firestore rules
         userEmail: user.email,
+        userName: user.name || user.email,
         eventId: eventId || "ssn_event",
         eventTitle: event.title,
         date: event.date,
         startTime: event.startTime,
         endTime: event.endTime,
-        registeredAt: new Date()
+        venue: event.venue || "",
+        registeredAt: new Date().toISOString()
       });
 
       setIsRegistered(true);
       alert("Registration Successful!");
-      navigate('/dashboard'); // FIXED: navigates back to dashboard correctly
+      navigate('/dashboard');
     } catch (error) {
-      console.error(error);
+      console.error("❌ RSVP Error:", error);
+      alert(`Registration failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelRSVP = async () => {
+    if (!user) return;
+
+    const confirmCancel = window.confirm("Are you sure you want to cancel your registration?");
+    if (!confirmCancel) return;
+
+    setLoading(true);
+    try {
+      const q = query(
+        collection(db, "registrations"),
+        where("userId", "==", user.uid),
+        where("eventId", "==", eventId)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      for (const docSnap of querySnapshot.docs) {
+        await deleteDoc(doc(db, "registrations", docSnap.id));
+      }
+
+      setIsRegistered(false);
+      alert("Registration cancelled successfully!");
+    } catch (error) {
+      console.error("❌ Cancel Error:", error);
+      alert(`Failed to cancel: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -106,14 +161,23 @@ const EventDetails = () => {
         </div>
         <div className="description-box">{event.description}</div>
         
-        {/* FIXED: Corrected className syntax */}
-        <button 
-          className={`rsvp-button ${isRegistered ? 'registered' : ''}`} 
-          onClick={handleRSVP}
-          disabled={loading || isRegistered}
-        >
-          {loading ? "Processing..." : isRegistered ? "✓ Registered" : "Confirm RSVP"}
-        </button>
+        {isRegistered ? (
+          <button 
+            className="rsvp-button registered" 
+            onClick={handleCancelRSVP}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Cancel Registration"}
+          </button>
+        ) : (
+          <button 
+            className="rsvp-button" 
+            onClick={handleRSVP}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Confirm RSVP"}
+          </button>
+        )}
       </div>
     </div>
   );
