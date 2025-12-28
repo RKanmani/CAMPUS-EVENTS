@@ -5,6 +5,24 @@ import { AuthContext } from './AuthContext';
 import { db } from './firebase'; 
 import './EventDetails.css';
 
+const generateGoogleCalendarLink = (event) => {
+  const startDateTime = new Date(`${event.date}T${event.startTime}`);
+  const endDateTime = new Date(`${event.date}T${event.endTime}`);
+
+  const formatDate = (date) =>
+    date.toISOString().replace(/-|:|\.\d+/g, "");
+
+  const start = formatDate(startDateTime);
+  const end = formatDate(endDateTime);
+
+  return `https://www.google.com/calendar/render?action=TEMPLATE
+    &text=${encodeURIComponent(event.title)}
+    &dates=${start}/${end}
+    &details=${encodeURIComponent(event.description || "Campus Event")}
+    &location=${encodeURIComponent(event.venue)}
+  `;
+};
+
 const EventDetails = () => {
   const { user } = useContext(AuthContext); 
   const { eventId } = useParams(); 
@@ -28,11 +46,9 @@ const EventDetails = () => {
     fetchEvent();
   }, [eventId]);
 
-  // Check if user is already registered for this event
   useEffect(() => {
     const checkRegistration = async () => {
       if (!user || !eventId) return;
-      
       try {
         const registrationsRef = collection(db, "registrations");
         const q = query(
@@ -46,7 +62,6 @@ const EventDetails = () => {
         console.error("Error checking registration:", error);
       }
     };
-    
     checkRegistration();
   }, [user, eventId]);
 
@@ -54,7 +69,7 @@ const EventDetails = () => {
     const registrationsRef = collection(db, "registrations");
     const q = query(
       registrationsRef,
-      where("userId", "==", user.uid), // ⭐ Changed from userEmail to userId
+      where("userId", "==", user.uid),
       where("date", "==", event.date),
       where("startTime", "==", event.startTime)
     );
@@ -76,7 +91,7 @@ const EventDetails = () => {
 
       const q = query(
         collection(db, "registrations"),
-        where("userId", "==", user.uid), // ⭐ Changed from userEmail to userId
+        where("userId", "==", user.uid),
         where("date", "==", event.date),
         where("startTime", "==", event.startTime)
       );
@@ -91,9 +106,8 @@ const EventDetails = () => {
 
     setLoading(true);
     try {
-      // ⭐ CRITICAL FIX: Added userId field that matches request.auth.uid
       await addDoc(collection(db, "registrations"), {
-        userId: user.uid,              // ⭐ REQUIRED for Firestore rules
+        userId: user.uid,
         userEmail: user.email,
         userName: user.name || user.email,
         eventId: eventId || "ssn_event",
@@ -130,7 +144,6 @@ const EventDetails = () => {
         where("eventId", "==", eventId)
       );
       const querySnapshot = await getDocs(q);
-      
       for (const docSnap of querySnapshot.docs) {
         await deleteDoc(doc(db, "registrations", docSnap.id));
       }
@@ -162,13 +175,27 @@ const EventDetails = () => {
         <div className="description-box">{event.description}</div>
         
         {isRegistered ? (
-          <button 
-            className="rsvp-button registered" 
-            onClick={handleCancelRSVP}
-            disabled={loading}
-          >
-            {loading ? "Processing..." : "Cancel Registration"}
-          </button>
+          <>
+            <button 
+              className="rsvp-button registered" 
+              onClick={handleCancelRSVP}
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Cancel Registration"}
+            </button>
+
+            {/* Google Calendar Button only visible after RSVP */}
+            {event && (
+              <a
+                href={generateGoogleCalendarLink(event)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="calendar-btn"
+              >
+                📅 Add to Google Calendar
+              </a>
+            )}
+          </>
         ) : (
           <button 
             className="rsvp-button" 

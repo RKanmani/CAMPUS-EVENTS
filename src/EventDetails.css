@@ -56,3 +56,17 @@
 .rsvp-button.registered {
   background: #00b894;
 }
+.calendar-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #4285f4;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.calendar-btn:hover {
+  background-color: #357ae8;
+}
