@@ -1,6 +1,6 @@
 import { doc, getDoc, collection, addDoc, deleteDoc, query, where, getDocs } from "firebase/firestore"; 
 import React, { useState, useEffect, useContext } from 'react'; 
-import { useParams, useNavigate } from 'react-router-dom'; 
+import { useParams } from 'react-router-dom';
 import { AuthContext } from './AuthContext'; 
 import { db } from './firebase'; 
 import './EventDetails.css';
@@ -36,7 +36,6 @@ const generateGoogleCalendarLink = (event) => {
 const EventDetails = () => {
   const { user } = useContext(AuthContext); 
   const { eventId } = useParams(); 
-  const navigate = useNavigate();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);

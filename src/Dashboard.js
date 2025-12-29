@@ -10,16 +10,14 @@ const Dashboard = () => {
   const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("All");
-  const [now, setNow] = useState(new Date()); // ⏰ live clock
+  const [now, setNow] = useState(new Date());
 
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
-  /* ================= LIVE CLOCK (HH:MM:SS) ================= */
+  /* ================= LIVE CLOCK ================= */
   useEffect(() => {
-    const timer = setInterval(() => {
-      setNow(new Date());
-    }, 1000);
+    const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -32,56 +30,44 @@ const Dashboard = () => {
     return () => unsub();
   }, []);
 
-  /* ================= EVENT STATUS (DEFAULT TIME FIX HERE) ================= */
+  /* ================= EVENT STATUS ================= */
   const getEventStatus = (event) => {
     if (!event.date) {
       return { label: "Date not available", color: "#6b7280" };
     }
 
-    // ✅ DEFAULT TIMES
     const startTime = event.startTime || "10:00";
     const endTime = event.endTime || "12:00";
 
     const start = new Date(`${event.date}T${startTime}`);
     const end = new Date(`${event.date}T${endTime}`);
 
-    // Upcoming
     if (now < start) {
-      const diffMs = start - now;
-      const totalSeconds = Math.floor(diffMs / 1000);
-
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
+      const diff = Math.floor((start - now) / 1000);
+      const h = Math.floor(diff / 3600);
+      const m = Math.floor((diff % 3600) / 60);
+      const s = diff % 60;
 
       return {
-        label: `Starts in ${hours
+        label: `Starts in ${h.toString().padStart(2, "0")}:${m
           .toString()
-          .padStart(2, "0")}:${minutes
-          .toString()
-          .padStart(2, "0")}:${seconds
-          .toString()
-          .padStart(2, "0")}`,
+          .padStart(2, "0")}:${s.toString().padStart(2, "0")}`,
         color: "#2563eb",
       };
     }
 
-    // Ongoing
     if (now >= start && now <= end) {
       return { label: "Ongoing now", color: "#16a34a" };
     }
 
-    // Ended
     return { label: "Event ended", color: "#dc2626" };
   };
 
-  /* ================= UPCOMING (NEXT 24 HOURS) ================= */
+  /* ================= UPCOMING SOON ================= */
   const isUpcomingSoon = (event) => {
     if (!event.date) return false;
-
     const startTime = event.startTime || "10:00";
     const start = new Date(`${event.date}T${startTime}`);
-
     const diffHours = (start - now) / (1000 * 60 * 60);
     return diffHours > 0 && diffHours <= 24;
   };
@@ -92,8 +78,6 @@ const Dashboard = () => {
 
     const endTime = ev.endTime || "12:00";
     const eventEnd = new Date(`${ev.date}T${endTime}`);
-
-    // ❌ hide past events
     if (eventEnd < now) return false;
 
     return (
@@ -105,14 +89,32 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="glass-panel">
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <h1>Campus Events</h1>
-          <button
-            onClick={() => signOut(auth)}
-            className="btn-rsvp btn-going"
-          >
-            Logout
-          </button>
+
+          {/* 🔽 BUTTON GROUP */}
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button
+              onClick={() => navigate("/my-calendar")}
+              className="btn-rsvp"
+              style={{ backgroundColor: "#4285f4", color: "white" }}
+            >
+              📅 My Calendar
+            </button>
+
+            <button
+              onClick={() => signOut(auth)}
+              className="btn-rsvp btn-going"
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* SEARCH & FILTER */}
@@ -165,7 +167,8 @@ const Dashboard = () => {
                   <br />
                   📅 {event.date}
                   <br />
-                  ⏰ {(event.startTime || "10:00")} - {(event.endTime || "12:00")}
+                  ⏰ {(event.startTime || "10:00")} -{" "}
+                  {(event.endTime || "12:00")}
                 </p>
 
                 <p style={{ color: status.color, fontWeight: "600" }}>

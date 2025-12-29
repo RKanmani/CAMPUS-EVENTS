@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
+import MyCalendar from "./MyCalendar";
 
 import SignupAdmin from "./SignupAdmin";
 import SignupUser from "./SignupUser";
@@ -122,6 +123,10 @@ function App() {
           <Route
             path="/my-events"
             element={user ? <MyEvents /> : <Navigate to="/" />}
+          />
+          <Route 
+            path="/my-calendar" 
+            element={<MyCalendar />} 
           />
 
         </Routes>
