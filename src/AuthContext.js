@@ -3,6 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
+
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -59,13 +60,16 @@ export function AuthProvider({ children }) {
       } finally {
         setLoading(false);
       }
+
     });
 
     return () => unsubscribe();
   }, []);
 
   return (
+
     <AuthContext.Provider value={{ user, loading }}>
+
       {!loading && children}
     </AuthContext.Provider>
   );

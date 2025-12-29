@@ -8,6 +8,7 @@ function Log({ onSwitchToSignup }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleKeyPress = (e) => {
@@ -16,8 +17,10 @@ function Log({ onSwitchToSignup }) {
     }
   };
 
+
   const handleLogin = async () => {
     setError("");
+
 
     // Basic validation
     if (!email.trim() || !password) {
@@ -29,6 +32,7 @@ function Log({ onSwitchToSignup }) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address.");
+
       return;
     }
 
@@ -74,13 +78,16 @@ function Log({ onSwitchToSignup }) {
             Login to continue to Campus Events
           </p>
 
+
           {error && <p className="auth-error">{error}</p>}
+
 
           <input
             type="email"
             placeholder="Email"
             className="auth-input"
             value={email}
+
             onChange={(e) => {
               setEmail(e.target.value);
               if (error) setError(""); // Clear error on input
@@ -128,13 +135,16 @@ function Log({ onSwitchToSignup }) {
             </button>
           </div>
 
+
           <button
             className="auth-button"
             onClick={handleLogin}
             disabled={loading}
+
             aria-label="Login"
           >
             {loading ? "Logging in..." : "Login"}
+
           </button>
 
           <div className="auth-footer">
@@ -147,6 +157,7 @@ function Log({ onSwitchToSignup }) {
                 if (e.key === 'Enter' && !loading) onSwitchToSignup();
               }}
             >
+
               Sign up
             </span>
           </div>
@@ -156,5 +167,5 @@ function Log({ onSwitchToSignup }) {
     </div>
   );
 }
-
 export default Log;
+
