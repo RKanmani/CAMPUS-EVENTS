@@ -2,82 +2,133 @@ import { useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
-import Signup from "./Signup";
+import MyCalendar from "./MyCalendar";
+
+import SignupAdmin from "./SignupAdmin";
+import SignupUser from "./SignupUser";
 import Login from "./Log";
-import EventDetails from './EventDetails';
-import MyEvents from './MyEvents';
-import Dashboard from './Dashboard'; // Import the new feed
-import AddEvent from './addevent';     // Import the admin form
+import EventDetails from "./EventDetails";
+import MyEvents from "./MyEvents";
+import Dashboard from "./Dashboard";
+import AddEvent from "./addevent";
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
+  // ✅ hooks first
   const { user } = useContext(AuthContext);
-  const [showSignup, setShowSignup] = useState(false);
+  const [authView, setAuthView] = useState("login");
 
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+      setAuthView("login");
+    } catch (err) {
+      console.error(err);
+      alert("Logout failed");
+    }
   };
 
   return (
     <Router>
-      <div className="App" style={{ margin: 0, padding: 0 }}>
+      <div className="App">
+
+        {/* ⚠️ EMAIL VERIFICATION WARNING (NOT BLOCKING) */}
+        {user && !user.emailVerified && (
+          <div
+            style={{
+              background: "#fff3cd",
+              padding: "12px",
+              margin: "10px",
+              borderRadius: "8px",
+              textAlign: "center",
+              color: "#856404",
+              border: "1px solid #ffeeba"
+            }}
+          >
+            ⚠️ Please verify your email to unlock all features.
+            <br />
+            <button
+              onClick={logout}
+              style={{ marginTop: "8px" }}
+            >
+              Logout
+            </button>
+          </div>
+        )}
+
+        {/* ✅ ROUTES ARE ALWAYS RENDERED */}
         <Routes>
-          {/* MAIN HOME ROUTE */}
-          <Route path="/" element={
-            <div style={{ 
-              height: "100vh", 
-              width: "100vw", 
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "center", 
-              backgroundImage: "url('/campus.jpg')", 
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              position: "fixed",
-              top: 0,
-              left: 0
-            }}>
-              {/* If user is logged in, show the Dashboard. If not, show Login/Signup card */}
-              {user ? (
-                <div style={{ 
-                  backgroundColor: "rgba(255, 255, 255, 0.95)", 
-                  padding: "20px",
-                  borderRadius: "15px",
-                  width: "95%",
-                  height: "90vh",
-                  overflowY: "auto",
-                  zIndex: 1
-                }}>
-        
-                  
-                  <Dashboard /> 
+
+          {/* ================= HOME ================= */}
+          <Route
+            path="/"
+            element={
+              user ? (
+                <div>
+                  <button onClick={logout}>🚪 Logout</button>
+                  <Dashboard />
                 </div>
               ) : (
-                <div style={{ 
-                  backgroundColor: "white", 
-                  padding: "40px",
-                  borderRadius: "12px",
-                  boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-                  textAlign: "center",
-                  width: "90%",
-                  maxWidth: "450px",
-                  zIndex: 1
-                }}>
-                  {showSignup ? (
-                    <Signup onSwitchToLogin={() => setShowSignup(false)} />
-                  ) : (
-                    <Login onSwitchToSignup={() => setShowSignup(true)} />
+                <>
+                  {authView === "login" && (
+                    <Login onSwitchToSignup={() => setAuthView("signup-user")} />
                   )}
-                </div>
-              )}
-            </div>
-          } />
 
-          {/* ADDITIONAL ROUTES */}
-          <Route path="/add-event" element={user ? <AddEvent /> : <Navigate to="/" />} />
-          <Route path="/event/:eventId" element={<EventDetails />} />
-          <Route path="/my-events" element={<MyEvents />} />
+                  {authView === "signup-user" && (
+                    <SignupUser
+                      onSwitchToLogin={() => setAuthView("login")}
+                      onSwitchToAdmin={() => setAuthView("signup-admin")}
+                    />
+                  )}
+
+                  {authView === "signup-admin" && (
+                    <SignupAdmin
+                      onSwitchToLogin={() => setAuthView("login")}
+                      onSwitchToUser={() => setAuthView("signup-user")}
+                    />
+                  )}
+                </>
+              )
+            }
+          />
+
+          {/* ================= SIGNUP ROUTES ================= */}
+          <Route
+            path="/signup/user"
+            element={!user ? <SignupUser /> : <Navigate to="/" />}
+          />
+
+          <Route
+            path="/signup/admin"
+            element={!user ? <SignupAdmin /> : <Navigate to="/" />}
+          />
+
+          {/* ================= ADMIN ================= */}
+          <Route
+            path="/add-event"
+            element={
+              user && user.isAdmin
+                ? <AddEvent />
+                : <Navigate to="/" />
+            }
+          />
+
+          {/* ================= USER ================= */}
+          <Route
+            path="/event/:eventId"
+            element={user ? <EventDetails /> : <Navigate to="/" />}
+          />
+
+          <Route
+            path="/my-events"
+            element={user ? <MyEvents /> : <Navigate to="/" />}
+          />
+          <Route 
+            path="/my-calendar" 
+            element={<MyCalendar />} 
+          />
+
         </Routes>
       </div>
     </Router>
@@ -85,3 +136,4 @@ function App() {
 }
 
 export default App;
+

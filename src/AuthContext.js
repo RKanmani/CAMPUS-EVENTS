@@ -1,7 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+
 
 export const AuthContext = createContext();
 
@@ -11,28 +12,64 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const docRef = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(docRef);
+      try {
+        if (currentUser) {
+          // 🔥 IMPORTANT: refresh verification status
+          await currentUser.reload();
 
-        if (docSnap.exists()) {
+          const docRef = doc(db, "users", currentUser.uid);
+          const docSnap = await getDoc(docRef);
+
+          let userData;
+
+          if (docSnap.exists()) {
+            userData = docSnap.data();
+          } else {
+            // fallback user doc
+            userData = {
+              name: currentUser.displayName || "",
+              department: "",
+              year: "",
+              interests: [],
+              role: "user",
+              createdAt: new Date()
+            };
+            await setDoc(docRef, userData);
+          }
+
+          // ✅ KEEP Firebase user + add Firestore data
           setUser({
             uid: currentUser.uid,
             email: currentUser.email,
-            ...docSnap.data() // 👈 includes name, dept, year
+            emailVerified: currentUser.emailVerified, // ✅ ADD THIS
+            name: userData.name || "",
+            department: userData.department || "",
+            year: userData.year || "",
+            interests: userData.interests || [],
+            role: userData.role || "user",
+            isAdmin: userData.role === "admin"
           });
+
+
+        } else {
+          setUser(null);
         }
-      } else {
+      } catch (err) {
+        console.error("AuthContext error:", err);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
+
     });
 
     return () => unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user }}>
+
+    <AuthContext.Provider value={{ user, loading }}>
+
       {!loading && children}
     </AuthContext.Provider>
   );

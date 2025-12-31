@@ -1,0 +1,9 @@
+.calendar-page {
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.calendar-page h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}

@@ -246,6 +246,11 @@
     inset 0 0 0 2px rgba(93, 95, 239, 0.55);
   transform: translateY(-2px);
 }
+.highlight {
+  border: 2px solid #facc15;
+  box-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
+}
+
 
 
 
