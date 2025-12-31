@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { db } from './firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import './addevent.css';
 
 const AddEvent = () => {
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -19,7 +19,7 @@ const AddEvent = () => {
     posterUrl: '',
     createdBy: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -29,17 +29,37 @@ const AddEvent = () => {
     });
   };
 
+  // 🔥 Convert date + time into Firestore Timestamp
+  const getEventStartTimestamp = () => {
+    const dateTimeString = `${formData.date}T${formData.startTime}`;
+    return Timestamp.fromDate(new Date(dateTimeString));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // PHASE 1: Writing the real schema to Firestore
+      const eventStartAt = getEventStartTimestamp();
+
       await addDoc(collection(db, "events"), {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        subCategory: formData.subCategory,
+        date: formData.date,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        venue: formData.venue,
+        posterUrl: formData.posterUrl,
+        createdBy: formData.createdBy,
+
+        // ✅ NEW FIELD (VERY IMPORTANT)
+        eventStartAt,
+
         createdAt: serverTimestamp()
       });
-      
+
       alert("Event Added Successfully!");
       navigate('/');
     } catch (err) {
@@ -55,47 +75,39 @@ const AddEvent = () => {
       <div className="add-event-card">
         <div className="add-event-header">
           <h2>Add New Campus Event</h2>
-          <button 
-            className="back-button" 
-            onClick={() => navigate('/')}
-          >
+          <button className="back-button" onClick={() => navigate('/')}>
             ← Back to Dashboard
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="event-form">
           <div className="form-group">
-            <label htmlFor="title">Event Title *</label>
+            <label>Event Title *</label>
             <input
               type="text"
-              id="title"
               name="title"
               className="form-input"
               value={formData.title}
               onChange={handleChange}
-              placeholder="Enter event title"
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Description</label>
+            <label>Description</label>
             <textarea
-              id="description"
               name="description"
               className="form-input"
               value={formData.description}
               onChange={handleChange}
-              placeholder="Describe your event"
               rows="4"
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="category">Category *</label>
+              <label>Category *</label>
               <select
-                id="category"
                 name="category"
                 className="form-input"
                 value={formData.category}
@@ -109,24 +121,21 @@ const AddEvent = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="subCategory">Sub Category</label>
+              <label>Sub Category</label>
               <input
                 type="text"
-                id="subCategory"
                 name="subCategory"
                 className="form-input"
                 value={formData.subCategory}
                 onChange={handleChange}
-                placeholder="e.g., Hackathon, Dance"
               />
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="date">Date *</label>
+            <label>Date *</label>
             <input
               type="date"
-              id="date"
               name="date"
               className="form-input"
               value={formData.date}
@@ -137,10 +146,9 @@ const AddEvent = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="startTime">Start Time *</label>
+              <label>Start Time *</label>
               <input
                 type="time"
-                id="startTime"
                 name="startTime"
                 className="form-input"
                 value={formData.startTime}
@@ -150,10 +158,9 @@ const AddEvent = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="endTime">End Time *</label>
+              <label>End Time *</label>
               <input
                 type="time"
-                id="endTime"
                 name="endTime"
                 className="form-input"
                 value={formData.endTime}
@@ -164,29 +171,25 @@ const AddEvent = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="venue">Venue *</label>
+            <label>Venue *</label>
             <input
               type="text"
-              id="venue"
               name="venue"
               className="form-input"
               value={formData.venue}
               onChange={handleChange}
-              placeholder="Event location"
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="posterUrl">Poster Image URL *</label>
+            <label>Poster Image URL *</label>
             <input
               type="url"
-              id="posterUrl"
               name="posterUrl"
               className="form-input"
               value={formData.posterUrl}
               onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
               required
             />
             {formData.posterUrl && (
@@ -197,24 +200,18 @@ const AddEvent = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="createdBy">Club Name (Created By) *</label>
+            <label>Club Name *</label>
             <input
               type="text"
-              id="createdBy"
               name="createdBy"
               className="form-input"
               value={formData.createdBy}
               onChange={handleChange}
-              placeholder="e.g., Tech Club, Cultural Committee"
               required
             />
           </div>
 
-          <button 
-            type="submit" 
-            className="submit-button"
-            disabled={loading}
-          >
+          <button type="submit" className="submit-button" disabled={loading}>
             {loading ? 'Publishing Event...' : 'Publish Event'}
           </button>
         </form>
