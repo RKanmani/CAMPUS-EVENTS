@@ -5,74 +5,56 @@ import { AuthContext } from './AuthContext';
 import { db } from './firebase'; 
 import './EventDetails.css';
 
-/* ================= GOOGLE CALENDAR LINK (AUTO-FILL) ================= */
+/* GOOGLE CALENDAR LINK GENERATOR */
 const generateGoogleCalendarLink = (event) => {
-  // Parse date & time
-  const [year, month, day] = event.date.split("-");
-  const [sh, sm] = event.startTime.split(":");
-  const [eh, em] = event.endTime.split(":");
+  if (!event.date || !event.startTime || !event.endTime) return "#";
+  try {
+    const [year, month, day] = event.date.split("-");
+    const [sh, sm] = event.startTime.split(":");
+    const [eh, em] = event.endTime.split(":");
 
-  // Create local Date objects
-  const startDate = new Date(year, month - 1, day, sh, sm);
-  const endDate = new Date(year, month - 1, day, eh, em);
+    const startDate = new Date(year, month - 1, day, sh, sm);
+    const endDate = new Date(year, month - 1, day, eh, em);
 
-  // Convert to Google Calendar UTC format
-  const formatUTC = (date) =>
-    date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    const formatUTC = (date) =>
+      date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 
-  const start = formatUTC(startDate);
-  const end = formatUTC(endDate);
-
-  return (
-    `https://www.google.com/calendar/render?action=TEMPLATE` +
-    `&text=${encodeURIComponent(event.title)}` +
-    `&dates=${start}/${end}` +
-    `&details=${encodeURIComponent(event.description || "Campus Event")}` +
-    `&location=${encodeURIComponent(event.venue || "")}`
-  );
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${formatUTC(startDate)}/${formatUTC(endDate)}&details=${encodeURIComponent(event.description || "")}&location=${encodeURIComponent(event.venue || "")}`;
+  } catch (error) {
+    return "#";
+  }
 };
-/* =================================================================== */
 
 const EventDetails = () => {
   const { user } = useContext(AuthContext); 
   const { eventId } = useParams(); 
-
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
-  /* -------- FETCH EVENT -------- */
+  const openInMaps = () => {
+    const venueName = event?.venue || "SSN College of Engineering";
+    const query = encodeURIComponent(`${venueName}, SSN College`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  };
+
   useEffect(() => {
-    const fetchEvent = async () => {
+    const fetchData = async () => {
       const ref = doc(db, "events", eventId);
       const snap = await getDoc(ref);
       if (snap.exists()) setEvent(snap.data());
-    };
-    fetchEvent();
-  }, [eventId]);
 
-  /* -------- CHECK REGISTRATION -------- */
-  useEffect(() => {
-    const checkRegistration = async () => {
-      if (!user) return;
-      const q = query(
-        collection(db, "registrations"),
-        where("userId", "==", user.uid),
-        where("eventId", "==", eventId)
-      );
-      const res = await getDocs(q);
-      setIsRegistered(!res.empty);
+      if (user) {
+        const q = query(collection(db, "registrations"), where("userId", "==", user.uid), where("eventId", "==", eventId));
+        const res = await getDocs(q);
+        setIsRegistered(!res.empty);
+      }
     };
-    checkRegistration();
-  }, [user, eventId]);
+    fetchData();
+  }, [eventId, user]);
 
-  /* -------- RSVP -------- */
   const handleRSVP = async () => {
-    if (!user) {
-      alert("Please login first!");
-      return;
-    }
-
+    if (!user) { alert("Please login first!"); return; }
     setLoading(true);
     try {
       await addDoc(collection(db, "registrations"), {
@@ -85,28 +67,17 @@ const EventDetails = () => {
         venue: event.venue,
         registeredAt: new Date().toISOString()
       });
-
       setIsRegistered(true);
       alert("Registered successfully!");
-    } catch (err) {
-      alert(err.message);
-    }
+    } catch (err) { alert(err.message); }
     setLoading(false);
   };
 
-  /* -------- CANCEL RSVP -------- */
   const handleCancelRSVP = async () => {
-    const q = query(
-      collection(db, "registrations"),
-      where("userId", "==", user.uid),
-      where("eventId", "==", eventId)
-    );
-
+    if (!window.confirm("Cancel this RSVP?")) return;
+    const q = query(collection(db, "registrations"), where("userId", "==", user.uid), where("eventId", "==", eventId));
     const res = await getDocs(q);
-    for (const d of res.docs) {
-      await deleteDoc(doc(db, "registrations", d.id));
-    }
-
+    for (const d of res.docs) { await deleteDoc(doc(db, "registrations", d.id)); }
     setIsRegistered(false);
     alert("Registration cancelled");
   };
@@ -114,44 +85,33 @@ const EventDetails = () => {
   if (!event) return <div className="loading">Loading...</div>;
 
   return (
-    <div className="event-detail-page">
-      <div className="poster-container">
-        <img src={event.posterUrl} alt="Event Poster" />
-      </div>
-
-      <div className="content-section">
-        <h1>{event.title}</h1>
-
-        <p><strong>Date:</strong> {event.date}</p>
-        <p><strong>Time:</strong> {event.startTime} - {event.endTime}</p>
-        <p><strong>Venue:</strong> {event.venue}</p>
-
-        <div className="description-box">{event.description}</div>
-
-        {isRegistered ? (
-          <>
-            <button className="rsvp-button registered" onClick={handleCancelRSVP}>
-              Cancel Registration
-            </button>
-
-            {/* ✅ GOOGLE CALENDAR — ONLY AFTER REGISTER */}
-            <a
-              href={generateGoogleCalendarLink(event)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="calendar-btn"
-            >
-              📅 Add to Google Calendar
-            </a>
-          </>
-        ) : (
-          <button className="rsvp-button" onClick={handleRSVP} disabled={loading}>
-            {loading ? "Processing..." : "Confirm RSVP"}
-          </button>
-        )}
+    <div className="event-detail-container">
+      <div className="event-card">
+        <div className="poster-section"><img src={event.posterUrl} alt="Poster" /></div>
+        <div className="content-section">
+          <h1>{event.title}</h1>
+          <div className="info-grid">
+            <p><strong>📅 Date:</strong> {event.date}</p>
+            <p><strong>⏰ Time:</strong> {event.startTime} - {event.endTime}</p>
+            <div className="venue-row">
+              <p><strong>📍 Venue:</strong> {event.venue}</p>
+              <button className="maps-mini-btn" onClick={openInMaps}>View on Map</button>
+            </div>
+          </div>
+          <div className="description-container"><p>{event.description}</p></div>
+          <div className="action-area">
+            {isRegistered ? (
+              <div className="registered-options">
+                <button className="rsvp-button cancel-btn" onClick={handleCancelRSVP}>Cancel RSVP</button>
+                <a href={generateGoogleCalendarLink(event)} target="_blank" rel="noopener noreferrer" className="calendar-btn">📅 Google Calendar</a>
+              </div>
+            ) : (
+              <button className="rsvp-button" onClick={handleRSVP} disabled={loading}>{loading ? "Registering..." : "Confirm RSVP"}</button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
-
 export default EventDetails;
