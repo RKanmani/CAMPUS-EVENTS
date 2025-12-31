@@ -1,0 +1,73 @@
+.event-detail-page {
+  max-width: 800px;
+  margin: 50px auto;
+  background: #ffffff;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  color: #2d3436;
+}
+
+.poster-container img {
+  width: 100%;
+  max-height: 450px;
+  object-fit: cover;
+}
+
+.content-section {
+  padding: 40px;
+}
+
+.info-grid {
+  display: flex;
+  justify-content: space-between;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
+}
+
+.description-box {
+  line-height: 1.6;
+  color: #636e72;
+  margin: 25px 0;
+  font-size: 1.1rem;
+}
+
+/* RSVP Button Styling */
+.rsvp-button {
+  width: 100%;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.rsvp-button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.rsvp-button.registered {
+  background: #00b894;
+}
+.calendar-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #4285f4;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.calendar-btn:hover {
+  background-color: #357ae8;
+}
+
