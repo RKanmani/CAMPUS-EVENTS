@@ -1,48 +1,109 @@
+/* Container and Layout - Kept same as previous */
 .event-detail-page {
-  max-width: 800px;
-  margin: 50px auto;
+  max-width: 500px;
+  margin: 40px auto;
   background: #ffffff;
-  border-radius: 25px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  color: #2d3436;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ssn-header {
+  background: #f8f9fa;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.ssn-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1a73e8;
+  font-weight: 700;
+}
+
+.poster-container {
+  width: 100%;
+  height: 280px;
+  background-color: #f0f0f0;
 }
 
 .poster-container img {
   width: 100%;
-  max-height: 450px;
+  height: 100%;
   object-fit: cover;
 }
 
 .content-section {
-  padding: 40px;
+  padding: 25px;
+}
+
+.content-section h1 {
+  font-size: 1.8rem;
+  margin: 0 0 15px 0;
+  color: #2d3436;
 }
 
 .info-grid {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.info-item {
+  font-size: 1rem;
+  color: #444;
+}
+
+.venue-row {
+  display: flex;
   justify-content: space-between;
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 15px;
-  margin: 20px 0;
+  align-items: center;
+}
+
+.maps-mini-btn {
+  background: #e8f0fe;
+  color: #1a73e8;
+  border: 1px solid #d2e3fc;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.maps-mini-btn:hover {
+  background: #1a73e8;
+  color: white;
 }
 
 .description-box {
   line-height: 1.6;
   color: #636e72;
-  margin: 25px 0;
-  font-size: 1.1rem;
+  margin-bottom: 25px;
+  font-size: 1rem;
 }
 
-/* RSVP Button Styling */
+.action-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .rsvp-button {
   width: 100%;
   background: linear-gradient(135deg, #6c5ce7, #a29bfe);
   color: white;
   border: none;
-  padding: 18px;
+  padding: 16px;
   border-radius: 12px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
   transition: 0.3s;
@@ -50,24 +111,61 @@
 
 .rsvp-button:hover {
   filter: brightness(1.1);
-  transform: scale(1.02);
+  transform: translateY(-2px);
 }
 
 .rsvp-button.registered {
   background: #00b894;
 }
+
+/* ======================================================= */
+/* NEW STYLES FOR LOGOUT AND CALENDAR BUTTONS */
+/* ======================================================= */
+
+/* Google Calendar Button - Modern Outline Style */
 .calendar-btn {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #4285f4;
-  color: white;
-  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: #ffffff;
+  color: #4285f4;
+  border: 2px solid #4285f4;
+  border-radius: 12px;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .calendar-btn:hover {
-  background-color: #357ae8;
+  background: #4285f4;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
 }
 
+/* Logout Button - Sleek Glass/Outline Style */
+.logout-btn {
+  background: #fff;
+  color: #d63031;
+  border: 1.5px solid #d63031;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(214, 48, 49, 0.1);
+}
+
+.logout-btn:hover {
+  background: #d63031;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(214, 48, 49, 0.2);
+  transform: translateY(-1px);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}

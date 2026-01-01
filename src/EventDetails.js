@@ -16,6 +16,7 @@ import "./EventDetails.css";
 
 /* ================= GOOGLE CALENDAR LINK ================= */
 const generateGoogleCalendarLink = (event) => {
+  if (!event.date || !event.startTime) return "#";
   const [year, month, day] = event.date.split("-");
   const [sh, sm] = event.startTime.split(":");
   const [eh, em] = event.endTime.split(":");
@@ -26,18 +27,14 @@ const generateGoogleCalendarLink = (event) => {
   const formatUTC = (date) =>
     date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 
-  const start = formatUTC(startDate);
-  const end = formatUTC(endDate);
-
   return (
     `https://www.google.com/calendar/render?action=TEMPLATE` +
     `&text=${encodeURIComponent(event.title)}` +
-    `&dates=${start}/${end}` +
+    `&dates=${formatUTC(startDate)}/${formatUTC(endDate)}` +
     `&details=${encodeURIComponent(event.description || "Campus Event")}` +
     `&location=${encodeURIComponent(event.venue || "")}`
   );
 };
-/* ======================================================= */
 
 const EventDetails = () => {
   const { user } = useContext(AuthContext);
@@ -46,6 +43,14 @@ const EventDetails = () => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+
+  /* ================= FREE GOOGLE MAPS LOGIC ================= */
+  const openInMaps = () => {
+    const venueName = event?.venue || "SSN College of Engineering";
+    // This searches for the venue specifically within SSN for accuracy
+    const query = encodeURIComponent(`${venueName}, SSN College of Engineering`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -71,11 +76,7 @@ const EventDetails = () => {
   }, [user, eventId]);
 
   const handleRSVP = async () => {
-    if (!user) {
-      alert("Please login first!");
-      return;
-    }
-
+    if (!user) { alert("Please login first!"); return; }
     setLoading(true);
     try {
       await addDoc(collection(db, "registrations"), {
@@ -88,27 +89,17 @@ const EventDetails = () => {
         venue: event.venue,
         registeredAt: new Date().toISOString(),
       });
-
       setIsRegistered(true);
       alert("Registered successfully!");
-    } catch (err) {
-      alert(err.message);
-    }
+    } catch (err) { alert(err.message); }
     setLoading(false);
   };
 
   const handleCancelRSVP = async () => {
-    const q = query(
-      collection(db, "registrations"),
-      where("userId", "==", user.uid),
-      where("eventId", "==", eventId)
-    );
-
+    if (!window.confirm("Cancel registration?")) return;
+    const q = query(collection(db, "registrations"), where("userId", "==", user.uid), where("eventId", "==", eventId));
     const res = await getDocs(q);
-    for (const d of res.docs) {
-      await deleteDoc(doc(db, "registrations", d.id));
-    }
-
+    for (const d of res.docs) { await deleteDoc(doc(db, "registrations", d.id)); }
     setIsRegistered(false);
     alert("Registration cancelled");
   };
@@ -118,7 +109,7 @@ const EventDetails = () => {
   return (
     <div className="event-detail-page">
       <div className="ssn-header">
-        <h2>SSN</h2>
+        <h2>SSN Events</h2>
       </div>
 
       <div className="poster-container">
@@ -130,42 +121,32 @@ const EventDetails = () => {
 
         <div className="info-grid">
           <div className="info-item">
-            <strong>Date:</strong> {event.date}
+            <strong>📅 Date:</strong> {event.date}
           </div>
-          <div className="info-item">
-            <strong>Venue:</strong> {event.venue}
+          <div className="info-item venue-row">
+            <span><strong>📍 Venue:</strong> {event.venue}</span>
+            <button className="maps-mini-btn" onClick={openInMaps}>View Map</button>
           </div>
         </div>
 
         <div className="description-box">{event.description}</div>
 
-        {isRegistered ? (
-          <>
-            <button
-              className="rsvp-button registered"
-              onClick={handleCancelRSVP}
-            >
-              Cancel Registration
+        <div className="action-stack">
+          {isRegistered ? (
+            <>
+              <button className="rsvp-button registered" onClick={handleCancelRSVP}>
+                Cancel Registration
+              </button>
+              <a href={generateGoogleCalendarLink(event)} target="_blank" rel="noopener noreferrer" className="calendar-btn">
+                📅 Add to Google Calendar
+              </a>
+            </>
+          ) : (
+            <button className="rsvp-button" onClick={handleRSVP} disabled={loading}>
+              {loading ? "Processing..." : "Confirm RSVP"}
             </button>
-
-            <a
-              href={generateGoogleCalendarLink(event)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="calendar-btn"
-            >
-              📅 Add to Google Calendar
-            </a>
-          </>
-        ) : (
-          <button
-            className="rsvp-button"
-            onClick={handleRSVP}
-            disabled={loading}
-          >
-            {loading ? "Processing..." : "Confirm RSVP"}
-          </button>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
