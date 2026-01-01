@@ -1,0 +1,37 @@
+/* Full page background */
+.auth-page {
+  min-height: 100vh;
+  background-image: url("../assets/bg.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card */
+.auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  width: 380px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Links section */
+.auth-links {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.link-text {
+  display: block;
+  margin-top: 8px;
+  color: #4f46e5;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.link-text:hover {
+  text-decoration: underline;
+}
