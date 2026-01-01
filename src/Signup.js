@@ -19,18 +19,13 @@ function Signup({ onSwitchToLogin }) {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (error) setError("");
   };
 
   const handleSignup = async () => {
     setError("");
 
-    if (
-      !form.name ||
-      !form.email ||
-      !form.password ||
-      !form.department ||
-      !form.year
-    ) {
+    if (!form.name || !form.email || !form.password || !form.department || !form.year) {
       setError("Please fill all required fields.");
       return;
     }
@@ -45,26 +40,27 @@ function Signup({ onSwitchToLogin }) {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        form.email,
+        form.email.trim(),
         form.password
       );
 
       await setDoc(doc(db, "users", userCredential.user.uid), {
-        name: form.name,
-        email: form.email,
-        department: form.department,
-        year: form.year,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        department: form.department.trim(),
+        year: form.year.trim(),
         interests: form.interests
-          ? form.interests.split(",").map((i) => i.trim())
+          ? form.interests.split(",").map(i => i.trim())
           : [],
+        role: "user",
         createdAt: new Date()
       });
 
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Signup failed.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -73,71 +69,18 @@ function Signup({ onSwitchToLogin }) {
         <div className="auth-card">
 
           <h2 className="auth-title">Create Account 🎓</h2>
-          <p className="auth-subtitle">
-            Join and explore campus events
-          </p>
+          <p className="auth-subtitle">Join and explore campus events</p>
 
-          {error && (
-            <p style={{ color: "red", textAlign: "center", fontSize: "0.9rem" }}>
-              {error}
-            </p>
-          )}
+          {error && <p className="auth-error">{error}</p>}
 
-          <input
-            className="auth-input"
-            name="name"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-          />
+          <input className="auth-input" name="name" placeholder="Full Name" onChange={handleChange} />
+          <input className="auth-input" name="email" type="email" placeholder="Email" onChange={handleChange} />
+          <input className="auth-input" name="password" type="password" placeholder="Password" onChange={handleChange} />
+          <input className="auth-input" name="department" placeholder="Department" onChange={handleChange} />
+          <input className="auth-input" name="year" placeholder="Year" onChange={handleChange} />
+          <input className="auth-input" name="interests" placeholder="Interests (comma separated)" onChange={handleChange} />
 
-          <input
-            className="auth-input"
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-          />
-
-          <input
-            className="auth-input"
-            name="password"
-            type="password"
-            placeholder="Password (min 6 characters)"
-            value={form.password}
-            onChange={handleChange}
-          />
-
-          <input
-            className="auth-input"
-            name="department"
-            placeholder="Department"
-            value={form.department}
-            onChange={handleChange}
-          />
-
-          <input
-            className="auth-input"
-            name="year"
-            placeholder="Year"
-            value={form.year}
-            onChange={handleChange}
-          />
-
-          <input
-            className="auth-input"
-            name="interests"
-            placeholder="Interests (comma separated)"
-            value={form.interests}
-            onChange={handleChange}
-          />
-
-          <button
-            className="auth-button"
-            onClick={handleSignup}
-            disabled={loading}
-          >
+          <button className="auth-button" onClick={handleSignup} disabled={loading}>
             {loading ? "Creating account..." : "Create Account"}
           </button>
 

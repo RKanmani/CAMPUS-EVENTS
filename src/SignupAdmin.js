@@ -41,7 +41,6 @@ function SignupAdmin({ onSwitchToLogin, onSwitchToUser }) {
         form.password
       );
 
-      // 🔥 FIX 1 — email verification
       await sendEmailVerification(userCredential.user);
 
       await setDoc(doc(db, "users", userCredential.user.uid), {
@@ -54,12 +53,11 @@ function SignupAdmin({ onSwitchToLogin, onSwitchToUser }) {
       });
 
       await auth.signOut();
-
       alert("Admin verification email sent. Please verify and login.");
       onSwitchToLogin();
 
     } catch (err) {
-      setError(err.message || "Signup failed.");
+      setError(err.message || "Admin signup failed.");
     } finally {
       setLoading(false);
     }
@@ -69,27 +67,31 @@ function SignupAdmin({ onSwitchToLogin, onSwitchToUser }) {
     <div className="auth-page">
       <div className="auth-overlay">
         <div className="auth-card">
-          <h2>Admin Signup 🔐</h2>
+
+          <h2 className="auth-title">Admin Signup 🔐</h2>
+          <p className="auth-subtitle">Authorized admins only</p>
 
           {error && <p className="auth-error">{error}</p>}
 
-          <input name="name" placeholder="Name" onChange={handleChange} />
-          <input name="email" placeholder="Email" onChange={handleChange} />
-          <input name="password" type="password" placeholder="Password" onChange={handleChange} />
-          <input name="department" placeholder="Department" onChange={handleChange} />
-          <input name="year" placeholder="Year" onChange={handleChange} />
-          <input name="adminKey" placeholder="Admin Key" onChange={handleChange} />
+          <input className="auth-input" name="name" placeholder="Name" onChange={handleChange} />
+          <input className="auth-input" name="email" placeholder="Email" onChange={handleChange} />
+          <input className="auth-input" type="password" name="password" placeholder="Password" onChange={handleChange} />
+          <input className="auth-input" name="department" placeholder="Department" onChange={handleChange} />
+          <input className="auth-input" name="year" placeholder="Year" onChange={handleChange} />
+          <input className="auth-input" name="adminKey" placeholder="Admin Key" onChange={handleChange} />
 
-          <button onClick={handleSignup} disabled={loading}>
-            {loading ? "Creating..." : "Create Admin"}
+          <button className="auth-button" onClick={handleSignup} disabled={loading}>
+            {loading ? "Creating Admin..." : "Create Admin"}
           </button>
 
-          <p>
+          <div className="auth-footer">
             Student? <span onClick={onSwitchToUser}>Sign up as User</span>
-          </p>
-          <p>
-            Login? <span onClick={onSwitchToLogin}>Go to Login</span>
-          </p>
+          </div>
+
+          <div className="auth-footer">
+            Already registered? <span onClick={onSwitchToLogin}>Login</span>
+          </div>
+
         </div>
       </div>
     </div>
