@@ -1,117 +1,73 @@
-/* Container: Tightened up to remove surrounding white space */
-.event-detail-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  background-color: #f4f7f9;
-}
-
-/* The Main Card: Switched to Column layout */
-.event-card {
-  display: flex;
-  flex-direction: column; /* Stacks image and text vertically */
-  background: white;
-  width: 100%;
-  max-width: 500px;       /* Narrower width so it doesn't stretch across the screen */
-  border-radius: 16px;
+.event-detail-page {
+  max-width: 800px;
+  margin: 50px auto;
+  background: #ffffff;
+  border-radius: 25px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  color: #2d3436;
 }
 
-/* Poster Section: Fixed height so it doesn't take too much vertical space */
-.poster-section {
+.poster-container img {
   width: 100%;
-  height: 250px;         /* Adjust this height to your liking */
-  background-color: #e0e0e0;
-}
-
-.poster-section img {
-  width: 100%;
-  height: 100%;
+  max-height: 450px;
   object-fit: cover;
 }
 
-/* Content Section: Tightened padding */
 .content-section {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.content-section h1 {
-  font-size: 1.8rem;
-  margin: 0;
-  color: #1a1a1a;
-  font-weight: 800;
+  padding: 40px;
 }
 
 .info-grid {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  justify-content: space-between;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
 }
 
-.info-grid p {
-  font-size: 1rem;
-  color: #444;
-  margin: 0;
+.description-box {
+  line-height: 1.6;
+  color: #636e72;
+  margin: 25px 0;
+  font-size: 1.1rem;
 }
 
-.venue-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Puts button next to venue text */
-  margin-top: 4px;
-}
-
-.maps-mini-btn {
-  background: #f0f4ff;
-  color: #1a73e8;
-  border: 1px solid #d2e3fc;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.description-container {
-  margin: 10px 0;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #666;
-}
-
-/* Action Area: Buttons stack at the bottom */
-.action-area {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
-}
-
+/* RSVP Button Styling */
 .rsvp-button {
   width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  background: #1a73e8;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
   color: white;
-  font-size: 1.1rem;
-  font-weight: bold;
+  border: none;
+  padding: 18px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
   cursor: pointer;
+  transition: 0.3s;
 }
 
+.rsvp-button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.rsvp-button.registered {
+  background: #00b894;
+}
 .calendar-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px;
-  border: 2px solid #34a853;
-  border-radius: 10px;
-  color: #34a853;
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #4285f4;
+  color: white;
+  border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
-  font-size: 0.95rem;
 }
+
+.calendar-btn:hover {
+  background-color: #357ae8;
+}
+

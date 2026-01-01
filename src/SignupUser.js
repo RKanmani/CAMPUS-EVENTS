@@ -3,6 +3,7 @@ import { auth, db } from "./firebase";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import "./Auth.css";
+import "./SignupUser.css";
 
 function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
   const [form, setForm] = useState({
@@ -129,11 +130,21 @@ function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
           </button>
 
           <p>
-            Admin? <span onClick={onSwitchToAdmin}>Sign up as Admin</span>
-          </p>
+          <div className="auth-links">
+          <span
+            className="link-text"
+            onClick={onSwitchToAdmin}
+          >
+            Admin? Sign up as Admin
+            </span>
 
-          <p>
-            Already have an account? <span onClick={onSwitchToLogin}>Login</span>
+            <span
+              className="link-text"
+              onClick={onSwitchToLogin}
+            >
+              Already have an account? Login
+            </span>
+          </div>
           </p>
         </div>
       </div>

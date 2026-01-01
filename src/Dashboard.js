@@ -89,21 +89,13 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="glass-panel">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>Campus Events</h1>
 
-          {/* 🔽 BUTTON GROUP */}
           <div style={{ display: "flex", gap: "10px" }}>
             <button
               onClick={() => navigate("/my-calendar")}
               className="btn-rsvp"
-              style={{ backgroundColor: "#4285f4", color: "white" }}
             >
               📅 My Calendar
             </button>
@@ -117,7 +109,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* SEARCH & FILTER */}
         <div className="search-filter-bar">
           <div className="search-box">
             <span className="icon">🔍</span>
@@ -140,7 +131,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* ================= EVENT GRID ================= */}
       <div className="event-grid">
         {filteredEvents.map((event) => {
           const status = getEventStatus(event);
@@ -167,8 +157,8 @@ const Dashboard = () => {
                   <br />
                   📅 {event.date}
                   <br />
-                  ⏰ {(event.startTime || "10:00")} -{" "}
-                  {(event.endTime || "12:00")}
+                  ⏰ {event.startTime || "10:00"} -{" "}
+                  {event.endTime || "12:00"}
                 </p>
 
                 <p style={{ color: status.color, fontWeight: "600" }}>
@@ -186,7 +176,6 @@ const Dashboard = () => {
         })}
       </div>
 
-      {/* ================= ADMIN BUTTON ================= */}
       {user && user.isAdmin && (
         <button className="fab" onClick={() => navigate("/add-event")}>
           +
