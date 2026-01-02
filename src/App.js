@@ -33,7 +33,11 @@ function App() {
           path="/"
           element={
             user ? (
-              <Dashboard />
+              user.profileComplete ? (
+                <Dashboard />
+              ) : (
+                <CompleteProfile />
+              )
             ) : (
               <>
                 {authView === "login" && (

@@ -62,6 +62,12 @@ export function AuthProvider({ children }) {
         }
 
         // ✅ ALLOWED USER (verified + SSN)
+        const isProfileComplete =
+          userData.department &&
+          userData.year &&
+          userData.interests &&
+          userData.interests.length > 0;
+
         setUser({
           uid: currentUser.uid,
           email: currentUser.email,
@@ -71,7 +77,8 @@ export function AuthProvider({ children }) {
           year: userData.year || "",
           interests: userData.interests || [],
           role: userData.role || "user",
-          isAdmin: userData.role === "admin"
+          isAdmin: userData.role === "admin",
+          profileComplete: isProfileComplete   // 🔥 ADD THIS
         });
 
       } catch (err) {
