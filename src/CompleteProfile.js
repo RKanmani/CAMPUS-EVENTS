@@ -33,13 +33,13 @@ function CompleteProfile() {
         department,
         year,
         interests: interests
-          .split(",")
-          .map((i) => i.trim())
-          .filter(Boolean)
-      });
+            .split(",")
+            .map((i) => i.trim())
+            .filter(Boolean)
+        });
 
-      // ✅ Redirect to dashboard
-      navigate("/");
+        // 🔄 Force AuthContext to re-evaluate
+        window.location.href = "/";
 
     } catch (err) {
       console.error(err);
