@@ -131,6 +131,26 @@
   border-left: 4px solid #c33;
 }
 
+/* Info message (blue text) */
+.auth-info {
+  color: #0b5ed7;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Secondary button (Resend email) */
+.auth-button.secondary {
+  background-color: #e9ecef;
+  color: #000;
+  border: 1px solid #ced4da;
+}
+
+.auth-button.secondary:hover {
+  background-color: #dee2e6;
+}
+
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 480px) {
   .auth-card {

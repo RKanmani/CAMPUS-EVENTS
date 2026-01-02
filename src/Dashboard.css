@@ -251,6 +251,34 @@
   box-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
 }
 
+/* RSVP / Logout buttons */
+.btn-rsvp {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #5d5fef, #7c7fff);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-rsvp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(93, 95, 239, 0.35);
+}
+
+.btn-going {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.btn-going:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(34, 197, 94, 0.35);
+}
+
+
 
 
 

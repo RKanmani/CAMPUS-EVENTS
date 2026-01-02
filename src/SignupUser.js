@@ -1,9 +1,21 @@
 import { useState } from "react";
 import { auth, db } from "./firebase";
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification
+} from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import "./Auth.css";
 import "./SignupUser.css";
+
+/* ✅ SSN College Email Validation
+   Format: name + 7 digit ID + @ssn.edu.in
+   Example: seetha2100456@ssn.edu.in
+*/
+const isValidSSNEmail = (email) => {
+  const ssnEmailPattern = /^[a-zA-Z]+[0-9]{7}@ssn\.edu\.in$/;
+  return ssnEmailPattern.test(email);
+};
 
 function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
   const [form, setForm] = useState({
@@ -32,6 +44,7 @@ function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
   const handleSignup = async () => {
     setError("");
 
+    // 🔹 Required fields check
     if (
       !form.name.trim() ||
       !form.email.trim() ||
@@ -43,12 +56,15 @@ function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      setError("Please enter a valid email address.");
+    // 🔹 SSN Email Restriction
+    if (!isValidSSNEmail(form.email.trim())) {
+      setError(
+        "Only SSN college email IDs are allowed (name + 7 digit ID @ssn.edu.in)"
+      );
       return;
     }
 
+    // 🔹 Password length check
     if (form.password.length < 6) {
       setError("Password must be at least 6 characters.");
       return;
@@ -57,33 +73,38 @@ function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
     setLoading(true);
 
     try {
+      // 🔹 Create Firebase user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         form.email.trim(),
         form.password
       );
 
-      // 🔥 FIX 1 — send verification email
+      // 🔹 Send verification email
       await sendEmailVerification(userCredential.user);
-
+      alert(
+        "Verification email sent. Please check Inbox, Spam or Promotions folder."
+      );
+      // 🔹 Save user data to Firestore
       await setDoc(doc(db, "users", userCredential.user.uid), {
         name: form.name.trim(),
         email: form.email.trim(),
         department: form.department.trim(),
         year: form.year.trim(),
         interests: form.interests
-          ? form.interests.split(",").map((i) => i.trim()).filter(Boolean)
+          ? form.interests
+              .split(",")
+              .map((i) => i.trim())
+              .filter(Boolean)
           : [],
         role: "user",
         createdAt: new Date()
       });
 
-      // Sign out after signup
+      // 🔹 Force logout until verification
       await auth.signOut();
 
       alert("Verification email sent! Please verify and login.");
-
-      // 🔥 Redirect to login
       onSwitchToLogin();
 
     } catch (err) {
@@ -105,47 +126,75 @@ function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
 
           {error && <p className="auth-error">{error}</p>}
 
-          <input className="auth-input" name="name" placeholder="Full Name *"
-            value={form.name} onChange={handleChange} onKeyPress={handleKeyPress} />
+          <input
+            className="auth-input"
+            name="name"
+            placeholder="Full Name *"
+            value={form.name}
+            onChange={handleChange}
+            onKeyPress={handleKeyPress}
+          />
 
-          <input className="auth-input" name="email" placeholder="Email *"
-            value={form.email} onChange={handleChange} onKeyPress={handleKeyPress} />
+          <input
+            className="auth-input"
+            name="email"
+            placeholder="College Email (ssn.edu.in) *"
+            value={form.email}
+            onChange={handleChange}
+            onKeyPress={handleKeyPress}
+          />
 
-          <input className="auth-input" name="password" type="password"
+          <input
+            className="auth-input"
+            name="password"
+            type="password"
             placeholder="Password *"
-            value={form.password} onChange={handleChange} onKeyPress={handleKeyPress} />
+            value={form.password}
+            onChange={handleChange}
+            onKeyPress={handleKeyPress}
+          />
 
-          <input className="auth-input" name="department" placeholder="Department *"
-            value={form.department} onChange={handleChange} />
+          <input
+            className="auth-input"
+            name="department"
+            placeholder="Department *"
+            value={form.department}
+            onChange={handleChange}
+          />
 
-          <input className="auth-input" name="year" placeholder="Year *"
-            value={form.year} onChange={handleChange} />
+          <input
+            className="auth-input"
+            name="year"
+            placeholder="Year *"
+            value={form.year}
+            onChange={handleChange}
+          />
 
-          <input className="auth-input" name="interests"
+          <input
+            className="auth-input"
+            name="interests"
             placeholder="Interests (optional)"
-            value={form.interests} onChange={handleChange} />
+            value={form.interests}
+            onChange={handleChange}
+          />
 
-          <button className="auth-button" onClick={handleSignup} disabled={loading}>
+          <button
+            className="auth-button"
+            onClick={handleSignup}
+            disabled={loading}
+          >
             {loading ? "Creating..." : "Create Account"}
           </button>
 
-          <p>
           <div className="auth-links">
-          <span
-            className="link-text"
-            onClick={onSwitchToAdmin}
-          >
-            Admin? Sign up as Admin
+            <span className="link-text" onClick={onSwitchToAdmin}>
+              Admin? Sign up as Admin
             </span>
 
-            <span
-              className="link-text"
-              onClick={onSwitchToLogin}
-            >
+            <span className="link-text" onClick={onSwitchToLogin}>
               Already have an account? Login
             </span>
           </div>
-          </p>
         </div>
       </div>
     </div>
