@@ -2,7 +2,6 @@ import { createContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-
 export const AuthContext = createContext();
 
 // ✅ SSN email rule
@@ -60,18 +59,36 @@ export function AuthProvider({ children }) {
           };
           await setDoc(docRef, userData);
         }
+        
+        console.log(
+          "AUTH displayName:",
+          currentUser.displayName,
+          "FIRESTORE name:",
+          userData?.name
+        );
+
 
         // ✅ ALLOWED USER (verified + SSN)
+        const isProfileComplete =
+          userData.department &&
+          userData.year &&
+          userData.interests &&
+          userData.interests.length > 0;
+
         setUser({
           uid: currentUser.uid,
           email: currentUser.email,
           emailVerified: currentUser.emailVerified,
-          name: userData.name || "",
-          department: userData.department || "",
-          year: userData.year || "",
-          interests: userData.interests || [],
-          role: userData.role || "user",
-          isAdmin: userData.role === "admin"
+
+          // ✅ ALWAYS USE FIRESTORE NAME
+          name: userData?.name || "Student",
+
+          department: userData?.department || "",
+          year: userData?.year || "",
+          interests: userData?.interests || [],
+          role: userData?.role || "user",
+          isAdmin: userData?.role === "admin",
+          profileComplete: isProfileComplete
         });
 
       } catch (err) {

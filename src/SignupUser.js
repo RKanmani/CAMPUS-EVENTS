@@ -7,6 +7,7 @@ import {
 import { doc, setDoc } from "firebase/firestore";
 import "./Auth.css";
 import "./SignupUser.css";
+import { updateProfile } from "firebase/auth";
 
 /* ✅ SSN College Email Validation
    Format: name + 7 digit ID + @ssn.edu.in
@@ -79,6 +80,9 @@ function SignupUser({ onSwitchToLogin, onSwitchToAdmin }) {
         form.email.trim(),
         form.password
       );
+      await updateProfile(userCredential.user, {
+        displayName: form.name.trim()
+      });
 
       // 🔹 Send verification email
       await sendEmailVerification(userCredential.user);

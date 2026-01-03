@@ -6,7 +6,7 @@ import { AuthContext } from "./AuthContext";
 import Login from "./Log";
 import SignupUser from "./SignupUser";
 import SignupAdmin from "./SignupAdmin";
-
+import CompleteProfile from "./CompleteProfile";
 import Dashboard from "./Dashboard";
 import AddEvent from "./addevent";
 import EventDetails from "./EventDetails";
@@ -33,7 +33,11 @@ function App() {
           path="/"
           element={
             user ? (
-              <Dashboard />
+              user.profileComplete ? (
+                <Dashboard />
+              ) : (
+                <CompleteProfile />
+              )
             ) : (
               <>
                 {authView === "login" && (
