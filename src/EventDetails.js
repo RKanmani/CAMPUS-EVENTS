@@ -75,25 +75,73 @@ const EventDetails = () => {
     checkRegistration();
   }, [user, eventId]);
 
-  const handleRSVP = async () => {
-    if (!user) { alert("Please login first!"); return; }
-    setLoading(true);
-    try {
-      await addDoc(collection(db, "registrations"), {
-        userId: user.uid,
-        eventId,
-        eventTitle: event.title,
-        date: event.date,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        venue: event.venue,
-        registeredAt: new Date().toISOString(),
-      });
-      setIsRegistered(true);
-      alert("Registered successfully!");
-    } catch (err) { alert(err.message); }
-    setLoading(false);
+    const checkTimeConflict = async () => {
+    const q = query(
+      collection(db, "registrations"),
+      where("userId", "==", user.uid),
+      where("date", "==", event.date),
+      where("startTime", "==", event.startTime)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      return snapshot.docs[0]; // existing conflicting RSVP
+    }
+    return null;
   };
+
+
+  const handleRSVP = async () => {
+  if (!user) {
+    alert("Please login first!");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // 🔴 Check for conflict
+    const conflictDoc = await checkTimeConflict();
+
+    if (conflictDoc) {
+      const replace = window.confirm(
+        "You already registered for another event at the same time.\n\n" +
+        "OK → Cancel old event and register for this one\n" +
+        "Cancel → Keep old event"
+      );
+
+      if (!replace) {
+        setLoading(false);
+        return;
+      }
+
+      // ❌ Remove older RSVP
+      await deleteDoc(conflictDoc.ref);
+    }
+
+    // ✅ Add new RSVP
+    await addDoc(collection(db, "registrations"), {
+      userId: user.uid,
+      eventId,
+      eventTitle: event.title,
+      date: event.date,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      venue: event.venue,
+      registeredAt: new Date().toISOString(),
+    });
+
+    setIsRegistered(true);
+    alert("Registered successfully!");
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+
+  setLoading(false);
+};
+
 
   const handleCancelRSVP = async () => {
     if (!window.confirm("Cancel registration?")) return;
